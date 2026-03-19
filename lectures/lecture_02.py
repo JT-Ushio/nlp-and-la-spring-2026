@@ -18,7 +18,7 @@ def what_is_tokens():
     text("### 什么是词元（Token）？")
     text("- NLP中，词元（Token）是文本处理的基本单位。它可以是单词、子词或字符，取决于分词方法。")
     text("- 一个句子（Sentence）是由若干个词元组成的线性序列。")
-    text("- $\mathbf{x} = (x_1, x_2, \ldots, x_n), ~~~ x_i \in \mathcal{V}$")
+    text(r"- $\mathbf{x} = (x_1, x_2, \ldots, x_n), ~~~ x_i \in \mathcal{V}$")
     text("- 每个词元 $x_i$ 都属于词表 $\mathcal{V}$。通常词表是静态的，包含了模型在**训练时见过**的所有词元。")
     text("- 词表大小（Vocabulary Size）是词表中词元的数量，通常在几万到几十万之间。")
 
@@ -26,7 +26,6 @@ def what_is_tokens():
     text("- 不同的分词粒度影响序列长度$n$和词表大小$|\mathcal{V}|$。")
 
     text("| 粒度 | 示例 | 序列长度 | 词表大小 |\n| :--- | :--- | :---: | :---: |\n| 单词（Word) | Hello world! → [Hello, world, !] | **较短** | **极大** |\n| 子词（Subword） | Hello world! → [He, llo, world, !] | **适中** | **适中** |\n| 字符（Character） | Hello world! → [H, e, l, l, o,  , w, o, r, l, d, !] | **极长** | **较小** |\n")
-
     text("#### 语言类型也会影响实际的词元粒度选择")
     text("- 屈折语：如拉丁语、俄语等，词内有表示语法意义的屈折词缀（如格、数、性）。")
     text("- 孤立语：如汉语、泰语等，词本身没有形态变化。")
