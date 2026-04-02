@@ -154,17 +154,103 @@ def what_is_lm():
     text(r"$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$")
     text("$$Q, K, V = XW_Q, XW_K, XW_V$$")
     text("- 通过自注意力机制，Transformer能够捕捉输入序列中任意位置之间的依赖关系，克服了RNN在处理长序列时的梯度消失问题。")
-    text(r"$$\text{FFN}(x) = \text{max}(0, xW_1 + b_1)W_2 + b_2$$")
-    text(r"$$\text{LayerNorm}(x) = \frac{x - \mu}{\sigma} \odot \gamma + \beta$$")
+
+    self_attn = nn.MultiheadAttention(embed_dim=4, num_heads=1, bias=False, batch_first=True)
+    embeddings = nn.Embedding(num_embeddings=16, embedding_dim=4)
+    embeddings_input = embeddings(torch.tensor([[1, 3, 2, 4, 5]]))  # (batch_size, seq_length, d_model)
+    embeddings_input_size = embeddings_input.size()  # @inspect embeddings_input_size
+    attn_output, attn_weights = self_attn(embeddings_input, embeddings_input, embeddings_input)
+    attn_output_size = attn_output.size()  # @inspect attn_output_size
+
+    text("- Multi-head：将输入分成多个子空间进行自注意力计算，增强模型的表达能力。")
+    text("$$\\text{MultiHead}(Q, K, V) = \\text{Concat}(head_1, head_2, \\ldots, head_h)W^O$$")
+    text("$$head_i = \\text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$$")
+    text("- 通过多头机制，Transformer能够在不同的子空间中捕捉输入序列中的不同类型的依赖关系，从而提升模型的性能。")
+    text("- GQA（Grouped-Query Attention）：将查询分组，减少参数量，同时保持模型性能。(不要求掌握细节)")
+    image("images/gqa.png", width=600)
+
+    causal_vs_bidirectional(self_attn=self_attn, input=embeddings_input)
+
+    text("🤔：大模型的记忆")
+    text("- 参数记忆")
+    text("- 上下文记忆")
+    text("- 外挂记忆（如检索增强模型）")
+
+    text("$$\\text{LayerNorm}(x) = \\frac{x - \mu}{\sigma} \odot \gamma + \\beta$$")
+    text("- 层归一化（Layer Normalization）：对每个位置的输入进行归一化，稳定训练过程，促进模型收敛。")
+    layer_norm = nn.LayerNorm(normalized_shape=4)
+    layer_norm_attn_output = layer_norm(attn_output)  # (batch_size, seq_length, d_model)
+    layer_norm_output_size = layer_norm_attn_output.size()  # @inspect layer_norm_output_size
+
+    text("$$\\text{FFN}(x) = \\text{max}(0, xW_1 + b_1)W_2 + b_2$$")
+    text("- 前馈神经网络（Feed-Forward Network, FFN）：每个位置的输出通过一个前馈神经网络进行非线性变换，增强模型的表达能力。")
+    ffn = nn.Sequential(
+        nn.Linear(4, 8),
+        nn.ReLU(),
+        nn.Linear(8, 4)
+    )
+    ffn_output = ffn(layer_norm_attn_output)  # (batch_size, seq_length, d_model)
+    ffn_output_size = ffn_output.size()  # @inspect ffn_output_size
+
+    text("- 残差连接（Residual Connection）：在每个子层（如自注意力层和前馈神经网络层）之后添加残差连接，帮助缓解深层网络中的梯度消失问题。")
+    text("$$\\text{Residual}(x) = x + \\text{SubLayer}(x)$$")
+    text("- 通过残差连接，Transformer能够训练更深的网络结构，捕捉更复杂的语言模式，从而提升语言模型的性能。")
     text("- 本质上是梯度的流动路径的设计，允许梯度在较深的网络中保持稳定")
+    final_output = ffn_output + attn_output  # (batch_size, seq_length, d_model)
+    final_output_size = final_output.size()  # @inspect final_output_size
+
     text(r"$$\text{Positional Encoding}(x) = x + \text{PE}$$")
+    text("- 位置编码（Positional Encoding）：由于Transformer没有循环结构，需要通过位置编码为输入序列中的每个词提供位置信息，使模型能够捕捉序列中的顺序关系。")
+    embeddings_input_2 = embeddings(torch.tensor([[1, 2, 3, 4, 5]]))  # (batch_size, seq_length, d_model)
+    embeddings_input_2_size = embeddings_input_2.size()  # @inspect embeddings_input_size
+    attn_output_2, _ = self_attn(embeddings_input_2, embeddings_input_2, embeddings_input_2)  # (batch_size, seq_length, d_model), (batch_size,
+    attn_output_2_size = attn_output_2.size()  # @inspect attn_output_size
+    is_same = torch.allclose(attn_output[:, -1, :], attn_output_2[:, -1, :])  # @inspect is_same
+
+    text("- 绝对位置编码：为每个位置生成一个固定的编码，通常使用正弦和余弦函数；或者一个可学习的位置编码。")
+    text("- 相对位置编码：根据词之间的相对位置生成编码，使模型能够更好地捕捉局部依赖关系。")
     text(r"$$\text{RoPE}(Q, K) = \text{Rotate}(Q, K)$$")
     text("- 提供位置信息，使模型能够区分不同位置的词，捕捉序列中的顺序关系。")
-    text("- Transformer的并行计算能力使得训练大规模语言模型成为可能，推动了自然语言处理领域的快速发展。")
+    text("🤔：单向注意力/因果（causal）注意力是否必须需要位置编码？")
+    link(title="[NoPE]", url="https://arxiv.org/abs/2305.19466")
 
     text("Huggingface Transformers库中，语言模型的实现通常基于Transformer架构，并提供了丰富的预训练模型和工具，方便研究者和开发者进行语言建模任务。")
     text("- GPT in Huggingface Transformers。")
     image("images/llama_config.png", width=600)
+    from transformers import LlamaConfig, LlamaForCausalLM
+    config = LlamaConfig(
+        vocab_size=32000,
+        hidden_size=256,              # d_model
+        intermediate_size=1024,       # FFN dimension (4x hidden)
+        num_hidden_layers=8,
+        num_attention_heads=8,
+        num_key_value_heads=8,        # 保持与 attention heads 相同（不使用GQA）
+        max_position_embeddings=2048,
+        rms_norm_eps=1e-6,
+        hidden_act="silu",
+        tie_word_embeddings=False
+    )
+    my_small_llama = LlamaForCausalLM(config)
+    total_params = f"Number of parameters: {my_small_llama.num_parameters()/1e6:.2f}M" # @inspect total_params
+
+    text("KV cache：在生成阶段，Transformer可以缓存之前计算的键（Key）和值（Value），避免重复计算，提高效率。")
+    link(title="[KV Cache Demo]", url="https://www.dailydoseofds.com/p/kv-caching-in-llms-explained-visually/")
+
+    text("**掩码语言模型**")
+    text("- BERT in Huggingface Transformers。")
+    text("- 掩码语言模型（Masked Language Model, MLM）在训练过程中随机掩盖输入序列中的一些词，并要求模型预测这些被掩盖的词。")
+    text("- 例如，对于句子“我喜欢自然语言处理”，我们可以随机掩盖其中的一个词，如“我喜欢[掩码]语言处理”，模型的任务是预测被掩盖的词“自然”。")
+    text("- 掩码语言模型通过引入掩码机制，使模型能够学习到更丰富的上下文信息，从而提升模型在自然语言理解任务中的性能。")
+
+    text("🤔：掩码语言模型能做生成吗？")
+    text("🤔：掩码语言模型与因果语言模型各有什么优劣？")
+
+def causal_vs_bidirectional(self_attn, input):
+    _, attn_weights_bidirectional = self_attn(input, input, input) # @inspect attn_weights_bidirectional
+    attn_mask = torch.triu(torch.ones(input.size(-2), input.size(-2)), diagonal=1).bool() # @inspect attn_mask
+    _, attn_weights_causal = self_attn(input, input, input, attn_mask=attn_mask, is_causal=True) # @inspect attn_weights_causal
+    text("- 双向（Bidirectional）自注意力：每个位置的查询可以与输入序列中的所有位置进行交互，捕捉全局依赖关系。")
+    text("- 因果（Causal）自注意力：每个位置的查询只能与输入序列中该位置之前的位置进行交互，确保模型在生成阶段只能利用历史信息，避免**信息泄露**。")
 
 
 def Q_and_A():
