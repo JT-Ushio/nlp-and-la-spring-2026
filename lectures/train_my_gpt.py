@@ -2,7 +2,7 @@ from transformers import AutoTokenizer, AutoConfig, AutoModelForCausalLM
 from datasets import load_dataset
 
 
-tokenizer = AutoTokenizer.from_pretrained("~/Github/assignment-multilingual-bpe-tokenizer/my_zh_bpe_tokenizer")
+tokenizer = AutoTokenizer.from_pretrained("/Users/taoji/Github/assignment-multilingual-bpe-tokenizer/my_zh_bpe_tokenizer")
 tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 config = AutoConfig.from_pretrained("gpt2", vocab_size=2000, n_embd=32, n_layer=2, n_head=4)
 my_gpt2 = AutoModelForCausalLM.from_config(config)
