@@ -54,11 +54,57 @@ def XLM():
 
     image("images/unmt1.png", width=800)
 
-    image("images/unmt2.png", width=400)
+    image("images/unmt2.png", width=600)
 
     image("images/unmt3.png", width=600)
 
     image("images/unmt4.png", width=600)
+
+    text("### 跨语言语言模型（Cross-lingual Language Model）")
+    image("images/xlm1.png", width=600)
+    text("- 单语MLM训练")
+    text("- 跨语言TLM训练")
+    text("🤔：TLM为什么起作用？")
+    image("images/xlm2.png", width=600)
+
+    text("### 多语言学习（Multilingual Learning）")
+    text("多语言学习是指在一个模型中同时学习多个语言的能力。 这可以通过共享模型参数来实现，使得模型能够从不同语言的数据中学习到通用的语言特征。")
+
+    link(title="[A Survey of Multilingual LLMs]", url="https://arxiv.org/pdf/2404.04925")
+    image("images/multilingual_learning.png", width=400)
+
+    text("多语言学习的一个重要挑战是如何处理不同语言之间的差异，例如语法结构、词汇和语义。 这需要设计适当的训练方法，以便模型能够有效地学习和泛化到不同的语言。")
+
+    image("images/multilingual_training.png", width=800)
+
+    image("images/multilingual_prompting.png", width=600)
+
+    image("images/multilingual_models.png", width=600)
+
+    link(title="[mT5, Google Research, 2020]", url="https://arxiv.org/pdf/1911.02116")
+
+    image("images/language_distribution.png", width=600)
+    image("images/mT5_res1.png", width=600)
+    image("images/mT5_res2.png", width=600)
+
+    image("images/multilingual_agent.png", width=600)
+
+    text("### 哪些语言和神经元相关？")
+    link(title="[Language-Specific Neurons: The Key to Multilingual Capabilities in Large Language Models]", url="https://arxiv.org/abs/2402.16438")
+    link(title="[Unveiling Linguistic Regions in Large Language Models]", url="https://aclanthology.org/2024.acl-long.338/")
+
+    image("images/lang_neuron.png", width=600)
+
+    image("images/lang_neuron_at_layers.png", width=600)
+
+    image("images/lang_ses_at_langs.png", width=600)
+
+    link(title="[Continually Adding New Languages to Multilingual Language Models]", url="https://arxiv.org/abs/2509.11414")
+    text("- 增量预训练（Continual Pretraining, CPT）")
+    text("- 经验重放（Experience Replay, ER）")
+    text("- 参数高效微调（Parameter-Efficient Fine-tuning, PEFT）")
+
+
 
 
 def assignment_2():
