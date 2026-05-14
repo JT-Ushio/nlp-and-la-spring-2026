@@ -104,7 +104,8 @@ def XLM():
     text("- 经验重放（Experience Replay, ER）")
     text("- 参数高效微调（Parameter-Efficient Fine-tuning, PEFT）")
 
-
+    image("images/adding_langs.png", width=600)
+    image("images/adding_langs_res.png", width=800)
 
 
 def assignment_2():
